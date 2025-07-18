@@ -1,7 +1,9 @@
+#IMPORTS
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 
+#DATASET CONFIGURATION
 # Paths
 train_dir = "data/train"
 test_dir = "data/test"
