@@ -9,7 +9,7 @@ train_dir = "data/train"
 test_dir = "data/test"
 
 # Image properties
-img_height, img_width = 48, 48  # Most facial datasets use 48x48
+img_height, img_width = 48, 48  
 batch_size = 64
 
 # Preprocess and load training images
@@ -18,7 +18,7 @@ train_datagen = ImageDataGenerator(rescale=1./255)
 train_data = train_datagen.flow_from_directory(
     train_dir,
     target_size=(img_height, img_width),
-    color_mode='grayscale',  # FER datasets usually grayscale
+    color_mode='grayscale', 
     batch_size=batch_size,
     class_mode='categorical'
 )
