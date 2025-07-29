@@ -25,7 +25,7 @@ NOTE: Install using conda befor pip, because pip can override some conda-install
 - I've used a grayscale emotion image dataset from **Kaggle**.
 - Used TensorFlow ImageDataGenerator to normalize and preprocess images.
 
-## Phase 2: Model Building & Training 
+## 🗂️ Phase 2: Model Building & Training 
 In this phase I've created a CNN using TensorFlow/Keras that learns to classify facial expressions from the training dataset.   
 A Convolutional Neural Network (CNN) is a specialized type of deep learning algorithm primarily designed for processing and analyzing visual data, such as images and videos.
 ### Imports
