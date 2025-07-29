@@ -39,18 +39,39 @@ test_data = test_datagen.flow_from_directory(
 
 #MODEL BUILDING & TRAINING
 # Model architecture
-model = Sequential([
-    Conv2D(32, (3, 3), activation='relu', input_shape=(48, 48, 1)),
-    MaxPooling2D(pool_size=(2, 2)),
+# Define the CNN model
+model = Sequential()
 
-    Conv2D(64, (3, 3), activation='relu'),
-    MaxPooling2D(pool_size=(2, 2)),
+# Convolutional Block 1
+model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(48, 48, 1)))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
 
-    Conv2D(128, (3, 3), activation='relu'),
-    MaxPooling2D(pool_size=(2, 2)),
+# Convolutional Block 2
+model.add(Conv2D(64, (3, 3), activation='relu'))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
 
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dropout(0.5),
-    Dense(train_data.num_classes, activation='softmax')  
-])
+# Convolutional Block 3
+model.add(Conv2D(128, (3, 3), activation='relu'))
+model.add(BatchNormalization())
+model.add(MaxPooling2D(pool_size=(2, 2)))
+model.add(Dropout(0.25))
+
+# Fully Connected Layers
+model.add(Flatten())
+model.add(Dense(512, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(train_data.num_classes, activation='softmax'))  # Output layer
+
+# Compile the model
+model.compile(
+    optimizer='adam',
+    loss='categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Print model summary
+model.summary()
