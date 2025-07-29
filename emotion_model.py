@@ -63,7 +63,7 @@ model.add(Dropout(0.25))
 model.add(Flatten())
 model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.5))
-model.add(Dense(train_data.num_classes, activation='softmax'))  # Output layer
+model.add(Dense(train_data.num_classes, activation='softmax')) 
 
 # Compile the model
 model.compile(
