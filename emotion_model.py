@@ -60,7 +60,6 @@ model.add(BatchNormalization())
 model.add(MaxPooling2D(pool_size=(2, 2)))
 model.add(Dropout(0.25))
 
-# Fully Connected Layers
 model.add(Flatten())
 model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.5))
@@ -72,6 +71,14 @@ model.compile(
     loss='categorical_crossentropy',
     metrics=['accuracy']
 )
-
-# Print model summary
 model.summary()
+
+# Train the model
+history = model.fit(
+    train_data,
+    validation_data=test_data,
+    epochs=25
+)
+
+model.save("emotion_recognition_model.h5")
+print("Model saved as emotion_recognition_model.h5")
