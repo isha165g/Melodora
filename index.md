@@ -38,4 +38,3 @@ A Convolutional Neural Network (CNN) is a specialized type of deep learning algo
 All these extract features from the images and help make predictions.
 
 ### Model Architecture
-- 
