@@ -5,6 +5,7 @@ import os
 from PIL import Image
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
+from recommend_music import recommend_playlist
 
 # -----------------------------
 # LOAD MODEL AND SETUP
@@ -59,6 +60,9 @@ def detect_emotion_from_image(image_path):
         label = emotion_labels[prediction.argmax()]
         print(f"✅ Detected emotion: {label}")
 
+        # Recommend playlists based on detected emotion
+        recommend_playlist(label)        
+        
         # Draw rectangle + label
         cv2.putText(frame, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0,255,255), 2)
@@ -95,6 +99,9 @@ def detect_emotion_from_webcam():
             # Predict emotion
             prediction = model.predict(roi, verbose=0)[0]
             label = emotion_labels[prediction.argmax()]
+            
+            # Recommend playlists based on detected emotion
+            recommend_playlist(label)
 
             # Draw face box + label
             cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 2)
