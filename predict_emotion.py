@@ -74,7 +74,7 @@ def detect_emotion_from_webcam():
 
     ret, frame = cap.read()
     if not ret:
-        print("❌ Failed to capture image from webcam.")
+        print("Failed to capture image from webcam.")
         cap.release()
         return
 
@@ -82,7 +82,7 @@ def detect_emotion_from_webcam():
     faces = face_classifier.detectMultiScale(gray, 1.3, 5)
 
     if len(faces) == 0:
-        print("⚠️ No face detected. Please try again.")
+        print("No face detected. Please try again.")
         cap.release()
         return
 
@@ -98,22 +98,19 @@ def detect_emotion_from_webcam():
     # Predict emotion
     prediction = model.predict(roi, verbose=0)[0]
     label = emotion_labels[prediction.argmax()]
-    print(f"✅ Detected emotion: {label}")
+    print(f"Detected emotion: {label}")
 
     # Draw and show captured frame
     cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 2)
     cv2.putText(frame, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
 
-    # -------------------------
-    # SAVE THE CAPTURED IMAGE
-    # -------------------------
     save_dir = "captured"
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
     save_path = os.path.join(save_dir, f"captured_{label}.jpg")
     cv2.imwrite(save_path, frame)
-    print(f"💾 Saved captured image at: {save_path}")
+    print(f"Saved captured image at: {save_path}")
 
     # Show for 2 seconds
     cv2.imshow("Captured Frame", frame)
@@ -126,7 +123,7 @@ def detect_emotion_from_webcam():
     if choice == 'y':
         recommend_playlist(label)
     else:
-        print("❌ Playlist generation cancelled.")
+        print("Playlist generation cancelled.")
 
 def main():
     print("\nWELCOME TO MELODORA!")
