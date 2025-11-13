@@ -64,45 +64,69 @@ def detect_emotion_from_image(image_path):
     cv2.destroyAllWindows()
 
 def detect_emotion_from_webcam():
-    """Detect emotion in real-time from webcam feed."""
+    """Capture one image from webcam, detect emotion once, save it, and generate playlist."""
     cap = cv2.VideoCapture(0)
-    print("\nWebcam started. Press 'q' to quit.\n")
+    print("\n🎥 Webcam starting... look into the camera for 3 seconds.\n")
 
-    while True:
+    # Allow camera to adjust
+    for _ in range(30):
         ret, frame = cap.read()
-        if not ret:
-            print("Failed to access webcam.")
-            break
 
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_classifier.detectMultiScale(gray, 1.3, 5)
+    ret, frame = cap.read()
+    if not ret:
+        print("❌ Failed to capture image from webcam.")
+        cap.release()
+        return
 
-        for (x, y, w, h) in faces:
-            roi_gray = gray[y:y+h, x:x+w]
-            roi_gray = cv2.resize(roi_gray, (48, 48), interpolation=cv2.INTER_AREA)
-            roi = roi_gray.astype('float') / 255.0
-            roi = img_to_array(roi)
-            roi = np.expand_dims(roi, axis=0)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = face_classifier.detectMultiScale(gray, 1.3, 5)
 
-            # Predict emotion
-            prediction = model.predict(roi, verbose=0)[0]
-            label = emotion_labels[prediction.argmax()]
-            
-            # Recommend playlists based on detected emotion
-            recommend_playlist(label)
+    if len(faces) == 0:
+        print("⚠️ No face detected. Please try again.")
+        cap.release()
+        return
 
-            # Draw face box + label
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 2)
-            cv2.putText(frame, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+    # Use the first detected face
+    (x, y, w, h) = faces[0]
+    roi_gray = gray[y:y+h, x:x+w]
+    roi_gray = cv2.resize(roi_gray, (48, 48), interpolation=cv2.INTER_AREA)
 
-        cv2.imshow("Live Emotion Detection (Webcam)", frame)
+    roi = roi_gray.astype('float') / 255.0
+    roi = img_to_array(roi)
+    roi = np.expand_dims(roi, axis=0)
 
-        # Quit on 'q'
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    # Predict emotion
+    prediction = model.predict(roi, verbose=0)[0]
+    label = emotion_labels[prediction.argmax()]
+    print(f"✅ Detected emotion: {label}")
 
-    cap.release()
+    # Draw and show captured frame
+    cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 255), 2)
+    cv2.putText(frame, label, (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 0), 2)
+
+    # -------------------------
+    # SAVE THE CAPTURED IMAGE
+    # -------------------------
+    save_dir = "captured"
+    if not os.path.exists(save_dir):
+        os.makedirs(save_dir)
+
+    save_path = os.path.join(save_dir, f"captured_{label}.jpg")
+    cv2.imwrite(save_path, frame)
+    print(f"💾 Saved captured image at: {save_path}")
+
+    # Show for 2 seconds
+    cv2.imshow("Captured Frame", frame)
+    cv2.waitKey(2000)
     cv2.destroyAllWindows()
+    cap.release()
+
+    # Ask user if they want playlist
+    choice = input(f"Detected emotion: {label}. Generate playlist? (y/n): ").lower()
+    if choice == 'y':
+        recommend_playlist(label)
+    else:
+        print("❌ Playlist generation cancelled.")
 
 def main():
     print("\nWELCOME TO MELODORA!")
