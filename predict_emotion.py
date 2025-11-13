@@ -1,4 +1,3 @@
-# IMPORTS
 import cv2
 import numpy as np
 import os
@@ -7,20 +6,12 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 from recommend_music import recommend_playlist
 
-# -----------------------------
-# LOAD MODEL AND SETUP
-# -----------------------------
 model = load_model("emotion_recognition_model.h5")
-
-# Emotion labels (must match your dataset folders)
 emotion_labels = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise']
 
 # Load OpenCV's pre-trained face detector
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# -----------------------------
-# EMOTION DETECTION FROM IMAGE
-# -----------------------------
 def detect_emotion_from_image(image_path):
     """Predict emotion from an uploaded image file."""
     frame = cv2.imread(image_path)
@@ -30,22 +21,22 @@ def detect_emotion_from_image(image_path):
         try:
             img = Image.open(image_path).convert("RGB")
             frame = np.array(img)[:, :, ::-1].copy()  # Convert RGB → BGR for OpenCV
-            print(f"⚠️ OpenCV couldn't read {os.path.basename(image_path)}, used Pillow instead.")
+            print(f"OpenCV couldn't read {os.path.basename(image_path)}, used Pillow instead.")
         except Exception as e:
-            raise ValueError(f"❌ Failed to load image: {image_path}\nReason: {e}")
+            raise ValueError(f"Failed to load image: {image_path}\nReason: {e}")
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_classifier.detectMultiScale(gray, 1.3, 5)
 
     if len(faces) == 0:
-        print("⚠️ No faces detected in the image.")
+        print("No faces detected in the image.")
         resized_gray = cv2.resize(gray, (48, 48), interpolation=cv2.INTER_AREA)
         roi = resized_gray.astype('float') / 255.0
         roi = img_to_array(roi)
         roi = np.expand_dims(roi, axis=0)
         prediction = model.predict(roi, verbose=0)[0]
         label = emotion_labels[prediction.argmax()]
-        print(f"🧠 Predicted emotion (whole image): {label}")
+        print(f"Predicted emotion: {label}")
         return
 
     for (x, y, w, h) in faces:
@@ -58,7 +49,7 @@ def detect_emotion_from_image(image_path):
         # Predict emotion
         prediction = model.predict(roi, verbose=0)[0]
         label = emotion_labels[prediction.argmax()]
-        print(f"✅ Detected emotion: {label}")
+        print(f"Detected emotion: {label}")
 
         # Recommend playlists based on detected emotion
         recommend_playlist(label)        
@@ -72,18 +63,15 @@ def detect_emotion_from_image(image_path):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-# -----------------------------
-# EMOTION DETECTION VIA WEBCAM
-# -----------------------------
 def detect_emotion_from_webcam():
     """Detect emotion in real-time from webcam feed."""
     cap = cv2.VideoCapture(0)
-    print("\n🎥 Webcam started. Press 'q' to quit.\n")
+    print("\nWebcam started. Press 'q' to quit.\n")
 
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("❌ Failed to access webcam.")
+            print("Failed to access webcam.")
             break
 
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -116,13 +104,10 @@ def detect_emotion_from_webcam():
     cap.release()
     cv2.destroyAllWindows()
 
-# -----------------------------
-# USER MODE SELECTION
-# -----------------------------
 def main():
-    print("\n✨ Melodora - Emotion Detection ✨")
-    print("1️⃣  Detect emotion from image upload")
-    print("2️⃣  Detect emotion in real-time via webcam")
+    print("\nWELCOME TO MELODORA!")
+    print("Enter 1 to detect emotion from image upload")
+    print("Enter 2 to detect emotion in real-time via webcam")
     
     choice = input("\nEnter your choice (1 or 2): ")
 
@@ -131,11 +116,11 @@ def main():
         if os.path.exists(image_path):
             detect_emotion_from_image(image_path)
         else:
-            print("❌ File not found. Please check the path and try again.")
+            print("File not found. Please check the path and try again.")
     elif choice == '2':
         detect_emotion_from_webcam()
     else:
-        print("❌ Invalid choice. Please restart and enter 1 or 2.")
+        print("Invalid choice. Please restart and enter 1 or 2.")
 
 if __name__ == "__main__":
     main()
